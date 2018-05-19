@@ -17,25 +17,14 @@
 #include <linux/sysfs.h>
 #include "printk_interface.h"
 
-
-int printk_mode;
+int __read_mostly printk_mode;
 
 
 /* sysfs interface for printk mode */
 
 static ssize_t printk_mode_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
 {
-
-	// print current mode
-	if (printk_mode == 0)
-	{
-		return sprintf(buf, "printk mode: %d (disabled)", printk_mode);
-	}
-	else
-	{
-		return sprintf(buf, "printk mode: %d (enabled)", printk_mode);
-	}
-
+	return sprintf(buf, "%d\n", printk_mode);
 }
 
 
@@ -53,6 +42,10 @@ static ssize_t printk_mode_store(struct kobject *kobj, struct kobj_attribute *at
 	{
 		printk_mode = val;
 	}
+
+	// clear buffer if disabling
+	if (val == 0)
+	    syslog_print_all(NULL, 0, true);
 
 	return count;
 }
