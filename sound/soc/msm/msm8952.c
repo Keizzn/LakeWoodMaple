@@ -1769,9 +1769,23 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 		btn_low[4] = 530;
 		btn_high[4] = 540;
 
-
 	return msm8952_wcd_cal;
 }
+
+#if defined(CONFIG_C3N_SMB358) || defined(CONFIG_C3B_BQ2560X)
+#else
+extern bool Spk_Pa_Flag;
+
+static void Set_Spk_PA_Id(void)
+{
+	if (Spk_Pa_Flag)
+		Spk_Pa_Id = A12_AW8738_SPK_PA;
+	else
+		Spk_Pa_Id = A13_AW87319_SPK_PA;
+
+	pr_err("%s:Spk_Pa_Id =%d\n!", __func__, Spk_Pa_Id);
+}
+#endif
 
 static int msm_audrx_init(struct snd_soc_pcm_runtime *rtd)
 {
